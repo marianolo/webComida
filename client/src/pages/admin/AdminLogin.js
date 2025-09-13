@@ -1,29 +1,55 @@
 import React, { useState } from 'react';
 import { loginAdmin } from '../../services/api';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAdmin } from '../../context/AdminContext';
 
 function AdminLogin() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { loginAdmin: contextLoginAdmin } = useAdmin(); // Usar la función del contexto
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     
-    console.log('Intentando login admin con:', form);
+    console.log('🔐 Intentando login admin con:', { email: form.email });
     
     try {
-      const res = await loginAdmin(form);
-      console.log('Respuesta del servidor admin:', res);
+      // Llamar a la API de login
+      const response = await loginAdmin(form);
+      console.log('✅ Respuesta del servidor admin:', response);
       
-      localStorage.setItem('admin', JSON.stringify(res));
+      // Verificar que tenemos los datos necesarios
+      if (!response.token) {
+        throw new Error('No se recibió token del servidor');
+      }
+      
+      if (!response.admin) {
+        throw new Error('No se recibieron datos del administrador');
+      }
+      
+      // Usar la función del contexto para manejar el login
+      contextLoginAdmin(response);
+      
+      console.log('✅ Login de admin completado, redirigiendo...');
       navigate('/admin/panel');
+      
     } catch (error) {
-      console.error('Error completo:', error);
-      setError('Error al iniciar sesión. Verifica tus credenciales de administrador.');
+      console.error('❌ Error completo:', error);
+      
+      // Manejar diferentes tipos de error
+      if (error.response?.status === 401) {
+        setError('Credenciales inválidas. Verifica tu email y contraseña.');
+      } else if (error.response?.status === 403) {
+        setError('Tu cuenta está desactivada. Contacta al administrador.');
+      } else if (error.response?.data?.error) {
+        setError(error.response.data.error);
+      } else {
+        setError('Error al iniciar sesión: ' + error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -61,6 +87,7 @@ function AdminLogin() {
                 placeholder="admin@foodapp.com"
                 value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
+                disabled={loading}
               />
             </div>
 
@@ -77,6 +104,7 @@ function AdminLogin() {
                 placeholder="Tu contraseña administrativa"
                 value={form.password}
                 onChange={e => setForm({ ...form, password: e.target.value })}
+                disabled={loading}
               />
             </div>
           </div>
@@ -84,14 +112,17 @@ function AdminLogin() {
           {/* Error Message */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-sm text-red-600">{error}</p>
+              <div className="flex">
+                <span className="text-red-400 mr-2">⚠️</span>
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
             </div>
           )}
 
           {/* Botón de Submit */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !form.email.trim() || !form.password.trim()}
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (

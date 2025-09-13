@@ -2,17 +2,18 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CarritoContext } from '../context/CarritoContext';
 import { UsuarioContext } from '../context/UsuarioContext';
+import { useAdmin } from '../context/AdminContext'; // Importar el hook del AdminContext
 
 function Navbar() {
   const { carrito } = useContext(CarritoContext);
   const { usuario, logout } = useContext(UsuarioContext);
-  const admin = JSON.parse(localStorage.getItem('admin'));
+  const { admin, logoutAdmin, isAdmin } = useAdmin(); // Usar el contexto de admin
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    if (admin) {
-      localStorage.removeItem('admin');
+    if (isAdmin()) {
+      logoutAdmin();
       navigate('/admin/login');
     } else {
       logout();
@@ -46,7 +47,8 @@ function Navbar() {
               <span>Inicio</span>
             </Link>
             
-            {carrito.length > 0 && (
+            {/* Mostrar carrito solo si NO es admin */}
+            {!isAdmin() && carrito.length > 0 && (
               <Link to="/pedido" className="nav-link flex items-center space-x-1 relative">
                 <span>🛒</span>
                 <span>Mi Pedido</span>
@@ -55,18 +57,32 @@ function Navbar() {
                 </span>
               </Link>
             )}
+
+            {/* Mostrar panel admin solo si ES admin */}
+            {isAdmin() && (
+              <Link to="/admin/panel" className="nav-link flex items-center space-x-1">
+                <span>⚙️</span>
+                <span>Panel Admin</span>
+              </Link>
+            )}
           </div>
 
           {/* Usuario/Admin info - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            {admin ? (
+            {isAdmin() ? (
               <div className="flex items-center space-x-4">
-                <Link to="/admin/panel" className="btn-primary flex items-center space-x-2">
-                  <span>⚙️</span>
-                  <span>Panel Admin</span>
-                </Link>
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center">
+                    <span className="text-white font-semibold text-sm">
+                      {admin.nombre ? admin.nombre.charAt(0).toUpperCase() : 'A'}
+                    </span>
+                  </div>
+                  <span className="text-gray-700 font-medium">
+                    Admin: {admin.nombre || admin.email}
+                  </span>
+                </div>
                 <button onClick={handleLogout} className="btn-secondary">
-                  Salir
+                  Cerrar Sesión
                 </button>
               </div>
             ) : usuario ? (
@@ -122,7 +138,8 @@ function Navbar() {
                 🏠 Inicio
               </Link>
               
-              {carrito.length > 0 && (
+              {/* Carrito solo para usuarios normales */}
+              {!isAdmin() && carrito.length > 0 && (
                 <Link 
                   to="/pedido" 
                   className="nav-link block px-3 py-2 text-base font-medium"
@@ -132,15 +149,22 @@ function Navbar() {
                 </Link>
               )}
               
-              {admin ? (
+              {/* Panel admin solo para admins */}
+              {isAdmin() && (
+                <Link 
+                  to="/admin/panel" 
+                  className="nav-link block px-3 py-2 text-base font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  ⚙️ Panel Admin
+                </Link>
+              )}
+              
+              {isAdmin() ? (
                 <>
-                  <Link 
-                    to="/admin/panel" 
-                    className="nav-link block px-3 py-2 text-base font-medium"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    ⚙️ Panel Admin
-                  </Link>
+                  <div className="px-3 py-2 text-base font-medium text-gray-700">
+                    👨‍💼 Admin: {admin.nombre || admin.email}
+                  </div>
                   <button 
                     onClick={() => {
                       handleLogout();
@@ -148,7 +172,7 @@ function Navbar() {
                     }}
                     className="block w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:text-red-800"
                   >
-                    Salir
+                    Cerrar Sesión
                   </button>
                 </>
               ) : usuario ? (

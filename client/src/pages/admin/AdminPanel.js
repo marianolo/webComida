@@ -99,31 +99,66 @@ function AdminPanel() {
               </div>
             </div>
           </Link>
-        </div>
 
-        {/* Quick Stats */}
-        <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Acceso Rápido</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
-              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                <span className="text-white font-bold">+</span>
+          {/* Categorías Card */}
+          <Link
+            to="/admin/categorias"
+            className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+          >
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">📁</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-gray-900">Categorías</div>
+                  <div className="text-sm text-gray-600">Organizar productos</div>
+                </div>
               </div>
-              <div>
-                <div className="font-medium text-gray-900">Agregar Producto</div>
-                <div className="text-sm text-gray-600">Crear nuevo elemento del menú</div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
+                  Administrar Categorías
+                </h3>
+                <p className="text-gray-600">
+                  Crear, editar y organizar las categorías del menú. Mantén tu catálogo bien estructurado.
+                </p>
+              </div>
+              <div className="mt-4 flex items-center text-green-600 font-medium group-hover:text-green-700">
+                <span>Ir a Categorías</span>
+                <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
               </div>
             </div>
-            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
-              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-                <span className="text-white font-bold">📊</span>
+          </Link>
+
+          {/* Estadísticas Card */}
+          <Link
+            to="/admin/estadisticas"
+            className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+          >
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">📊</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-gray-900">Estadísticas</div>
+                  <div className="text-sm text-gray-600">Análisis y reportes</div>
+                </div>
               </div>
-              <div>
-                <div className="font-medium text-gray-900">Ver Estadísticas</div>
-                <div className="text-sm text-gray-600">Próximamente disponible</div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                  Ver Estadísticas
+                </h3>
+                <p className="text-gray-600">
+                  Analiza las ventas, productos más vendidos y métricas importantes de tu negocio.
+                </p>
+              </div>
+              <div className="mt-4 flex items-center text-purple-600 font-medium group-hover:text-purple-700">
+                <span>Ir a Estadísticas</span>
+                <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </div>
